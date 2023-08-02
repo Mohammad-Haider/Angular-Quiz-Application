@@ -1,0 +1,92 @@
+<div class="container">
+  <h3 style="font-family: 'Times New Roman', Times, serif; font-size: 50px">
+    User Profile
+  </h3>
+  <span style="font-family: 'Times New Roman', Times, serif; font-size: 30px">
+    <b> Name:</b> {{ nameOfCurrentUser }}
+  </span>
+  <br />
+  <button (click)="showScores()">Score Table</button>
+</div>
+
+<div *ngIf="questionsList.length > 0">
+  <!-- div will only work when there is time remaining and showresult is false -->
+  <div *ngIf="!showResult && timeLeft > 0">
+    <h3 style="margin-left: 45%; font-family: 'Times New Roman', Times, serif">
+      Progress Bar
+    </h3>
+    <!-- Progress Bar done with the help of youtube Tutorial -->
+    <div class="progress-bar">
+      <div
+        class="progress"
+        [style.width]="
+          ((currentQuestionIndex + 1) / questionsList.length) * 100 + '%'
+        "
+      ></div>
+    </div>
+
+    <div class="container">
+      <!-- it basically retreives the question from questionsList array -->
+      <h3>{{ getCurrentQuestion().question }}</h3>
+      <ul>
+        <!-- it basically retreives the option from questionsList array -->
+        <li
+          type="none"
+          *ngFor="let option of getCurrentQuestion().options"
+          (click)="onOptionSelected(option)"
+        >
+          <label>
+            <input
+              type="radio"
+              [value]="option"
+              [checked]="option === selectedOption"
+            />
+            {{ option }}
+          </label>
+        </li>
+      </ul>
+      <button (click)="onNextQuestion()">Next</button>
+      <br />
+      <!-- displays the time left in a paragraph -->
+      <span>
+        <b>Time Left:</b>
+        <span class="blink">{{ formatTime(timeLeft) }}</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- This div will be displayed when time gets zero -->
+  <div *ngIf="!showResult && timeLeft <= 0">
+    <p>Time's up! Quiz is automatically submitted.</p>
+    <p>Your total score is: {{ totalScore }}</p>
+    <button (click)="reviewAnswers()">Review Answers</button>
+  </div>
+
+  <!-- Review Section and will show all the answers of the users -->
+  <div *ngIf="showResult">
+    <h3>Answers Selected By User</h3>
+    <ul>
+      <li *ngFor="let question of questionsList; let i = index">
+        <p>
+          <!-- it gives the question a question number -->
+          <strong>Question {{ i + 1 }}:</strong> {{ question.question }}
+        </p>
+        <ul>
+          <!-- ngClass used for the selected option and correct option -->
+          <li
+            *ngFor="let option of question.options"
+            [ngClass]="{
+              selected: userAnswers[i] === option,
+              correct: userAnswers[i] === question.correctAnswer
+            }"
+          >
+            {{ option }}
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <!-- displays total score -->
+    <p>Your total score is: {{ totalScore }}</p>
+    <button (click)="reviewAnswers()">Back to Quiz</button>
+  </div>
+</div>
